@@ -9,8 +9,8 @@ const readline = require("readline");
 const OLLAMA_URL = "http://localhost:11434";
 const MODEL = "qwen2.5:3b";                 // 已拉取的模型名
 const PERSONA_FILE = "persona.txt";         // 人设文件
-const HISTORY_FILE = "chat_history.json";   // 记忆文件（最近 10 句）
-const MAX_MEMORY = 10;                      // 记住最近 10 句（用户与 AI 各算一句）
+const HISTORY_FILE = "chat_history.json";   // 记忆文件（最近 20 句）
+const MAX_MEMORY = 20;                      // 记住最近 20 句（用户与 AI 各算一句）
 
 const dir = __dirname;
 
@@ -44,7 +44,12 @@ async function callOllama(messages) {
   const res = await fetch(OLLAMA_URL + "/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: MODEL, messages, stream: false }),
+    body: JSON.stringify({
+      model: MODEL,
+      messages,
+      stream: false,
+      options: { temperature: 0.8, repeat_penalty: 1.1 },
+    }),
   });
   if (!res.ok) throw new Error("HTTP " + res.status);
   const data = await res.json();
