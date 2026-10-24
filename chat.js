@@ -7,7 +7,7 @@ const readline = require("readline");
 
 // ===== 配置 =====
 const OLLAMA_URL = "http://localhost:11434";
-const MODEL = "qwen2.5:3b";                 // 已拉取的模型名
+const MODEL = "deepseek-r1:7b";             // 推理模型，回复里带 <thought> 思考过程
 const PERSONA_FILE = "persona.txt";         // 人设文件
 const HISTORY_FILE = "chat_history.json";   // 记忆文件（最近 20 句）
 const MAX_MEMORY = 20;                      // 记住最近 20 句（用户与 AI 各算一句）
@@ -40,6 +40,14 @@ function saveHistory(messages) {
   );
 }
 
+// 去掉推理模型的思考过程（<thought>…</thought> 标签及其内容），只留最终对话
+function stripThinking(text) {
+  return text
+    .replace(/<\s*thought\s*>[\s\S]*?<\s*\/\s*thought\s*>/gi, "")  // 配对标签（含空格容错）
+    .replace(/<\s*\/?\s*thought\s*>/gi, "")                        // 残留的单个标签
+    .trim();
+}
+
 async function callOllama(messages) {
   const res = await fetch(OLLAMA_URL + "/api/chat", {
     method: "POST",
@@ -53,7 +61,7 @@ async function callOllama(messages) {
   });
   if (!res.ok) throw new Error("HTTP " + res.status);
   const data = await res.json();
-  return data.message.content.trim();
+  return stripThinking(data.message.content);
 }
 
 function main() {
