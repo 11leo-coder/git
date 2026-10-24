@@ -1,4 +1,4 @@
-// 本地 AI 聊天伴侣 —— 小豆
+// 本地 AI 聊天伴侣 —— 糖糖
 // 依赖：Node.js（v18+，内置 fetch）+ 本地 Ollama 服务
 // 用法：node chat.js
 const fs = require("fs");
@@ -93,7 +93,7 @@ async function callOllama(messages) {
 async function summarizeConversation(history) {
   if (!history.length) return [];
   const convo = history
-    .map((m) => (m.role === "user" ? "用户" : "小豆") + "：" + m.content)
+    .map((m) => (m.role === "user" ? "用户" : "糖糖") + "：" + m.content)
     .join("\n");
   const messages = [
     {
@@ -133,7 +133,7 @@ function main() {
   const systemPrompt = buildSystemPrompt(persona, loadLongTermMemory(MAX_LONG_TERM));
 
   console.log("=".repeat(40));
-  console.log("  小豆（本地 AI 伙伴）已就位");
+  console.log("  糖糖（本地 AI 伙伴）已就位");
   console.log("  输入 exit / quit / 退出 来结束聊天");
   console.log("=".repeat(40));
   console.log();
@@ -148,7 +148,7 @@ function main() {
       return;
     }
     if (["exit", "quit", "退出"].includes(userInput.toLowerCase())) {
-      console.log("小豆：哼，走就走，下次记得再来。");
+      console.log("糖糖：哼，走就走，下次记得再来。");
       rl.close();
       return;
     }
@@ -166,16 +166,16 @@ function main() {
       reply = await callOllama(messages);
     } catch (e) {
       if (e.name === "TypeError" || e.cause?.code === "ECONNREFUSED") {
-        console.log("小豆：……我连不上引擎了。Ollama 启动了吗？模型拉下来了吗？");
+        console.log("糖糖：……我连不上引擎了。Ollama 启动了吗？模型拉下来了吗？");
       } else {
-        console.log("小豆：出错了：" + e.message);
+        console.log("糖糖：出错了：" + e.message);
       }
       busy = false;
       if (!closed) rl.prompt();
       return;
     }
 
-    console.log("小豆：" + reply);
+    console.log("糖糖：" + reply);
     console.log();
 
     // 更新短期记忆：用户这句 + 我的回复
